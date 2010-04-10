@@ -18,7 +18,7 @@ import android.view.SurfaceHolder;
 @SuppressWarnings("unchecked")
 public class LiveWallpaper extends WallpaperService {
 
-	private static final String LOG_TAG = "LiveWallpaper";
+	public static final String LOG_TAG = "LiveWallpaper";
 
 	@Override
 	public void onCreate() {
