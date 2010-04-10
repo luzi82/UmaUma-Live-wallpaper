@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Uma Uma Wallpaper</string>
+
+    <string name="i18n_version">20100410180211</string>
+
+    <string name="app_name">Caramelldansen Live Wallpaper</string>
+    <string name="description">ウッーウッーウマウマ(ﾟ∀ﾟ)</string>
+    <string name="preference_info_about_appwebpage_title">Visit the application\'s web page</string>
+    <string name="preference_info_about_appwebpage_url">http://wiki.github.com/luzi82/UmaUma-Live-wallpaper/</string>
+    <string name="preference_info_about_developer_name">Luzi82</string>
+    <string name="preference_info_about_developer_title">Developer</string>
+    <string name="preference_info_about_developer_url">http://blog.luzi82.com/</string>
+    <string name="preference_info_about_email_address">luzi82@gmail.com</string>
+    <string name="preference_info_about_email_subtitle">luzi82@gmail.com</string>
+    <string name="preference_info_about_email_title">Send email to developer</string>
+    <string name="preference_info_about_i18n_version_title">Localization version</string>
+    <string name="preference_info_about_lib_version_title">libumauma.so version</string>
+    <string name="preference_info_about_moreapp_title">View more applications</string>
+    <string name="preference_info_about_moreapp_url">market://search?q=pub:luzi82</string>
+    <string name="preference_info_about_share_title">Share this application</string>
+    <string name="preference_info_about_title">About application</string>
+    <string name="preference_info_about_translate_title">Translate this application</string>
+    <string name="preference_info_about_translate_url">http://wiki.github.com/luzi82/UmaUma-Live-wallpaper/translation</string>
+    <string name="preference_info_about_version_title">Application version</string>
+    <string name="preference_info_about_xlsg_subtitle">A comic about China web censorship (Chinese)</string>
+    <string name="preference_info_about_xlsg_title">小绿四格</string>
+    <string name="preference_info_about_xlsg_url">http://www.luzi82.com/~luzi82/xlsg/</string>
+    <string name="preference_info_title">Informations</string>
+    <string name="qrcode_title">Share Caramelldansen Live Wallpaper</string>
+    <string name="wallpaper_name">Caramelldansen</string>
 </resources>

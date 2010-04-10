@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="i18n_version">20100410180211</string>
+
+    <string name="app_name">焦糖舞当前壁纸</string>
+    <string name="description">ウッーウッーウマウマ(ﾟ∀ﾟ)</string>
+    <string name="preference_info_about_appwebpage_title">访问应用程序的网页</string>
+    <string name="preference_info_about_appwebpage_url">http://wiki.github.com/luzi82/UmaUma-Live-wallpaper/</string>
+    <string name="preference_info_about_developer_name">栗子捌贰</string>
+    <string name="preference_info_about_developer_title">开发人员</string>
+    <string name="preference_info_about_developer_url">http://blog.luzi82.com/</string>
+    <string name="preference_info_about_email_address">luzi82@gmail.com</string>
+    <string name="preference_info_about_email_subtitle">luzi82@gmail.com</string>
+    <string name="preference_info_about_email_title">给开发人员发送电子邮件</string>
+    <string name="preference_info_about_i18n_version_title">本地化版本</string>
+    <string name="preference_info_about_lib_version_title">libumauma.so版本</string>
+    <string name="preference_info_about_moreapp_title">查看更多应用程序</string>
+    <string name="preference_info_about_moreapp_url">market://search?q=pub:luzi82</string>
+    <string name="preference_info_about_share_title">分享此应用程序</string>
+    <string name="preference_info_about_title">关於应用程序</string>
+    <string name="preference_info_about_translate_title">翻译此应用程序</string>
+    <string name="preference_info_about_translate_url">http://wiki.github.com/luzi82/UmaUma-Live-wallpaper/translation</string>
+    <string name="preference_info_about_version_title">应用程序版本</string>
+    <string name="preference_info_about_xlsg_subtitle">讽刺中国网络审查的四格漫画</string>
+    <string name="preference_info_about_xlsg_title">小绿四格</string>
+    <string name="preference_info_about_xlsg_url">http://www.luzi82.com/~luzi82/xlsg/</string>
+    <string name="preference_info_title">资讯</string>
+    <string name="qrcode_title">分享焦糖舞当前壁纸</string>
+    <string name="wallpaper_name">焦糖舞</string>
+</resources>
