@@ -7,3 +7,4 @@ out
 install.sh
 .~lock.i18n.ods#
 jni/version.h
+.i18n_timestamp

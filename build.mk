@@ -8,7 +8,7 @@ all : .i18n_timestamp libumauma.so
 	ods2xml.sh
 	cp res/values-zh-rHK/strings.xml res/values-zh-rMO
 	cp res/values-zh-rHK/strings.xml res/values-zh-rTW
-	touch .i18n_timpstamp
+	touch .i18n_timestamp
 
 libumauma.so : jni/umauma.c
 	jni_version.sh
