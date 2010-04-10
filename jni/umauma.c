@@ -9,8 +9,12 @@
 JNIEXPORT void JNICALL Java_com_luzi82_umawallpaper_LibUmaumaSo_getVersion(JNIEnv* env,
 		jclass cls, jbyteArray out) {
 	jbyte*buf=((*env)->GetByteArrayElements(env,out,NULL));
-	if(buf){
+	if(buf) {
 		memcpy(buf,__AUTO_VERSION__,sizeof(__AUTO_VERSION__));
 		(*env)->ReleaseByteArrayElements(env,out,buf,0);
 	}
+}
+
+JNIEXPORT void JNICALL Java_com_luzi82_umawallpaper_LibUmaumaSo_decode(JNIEnv* env,
+		jclass cls, jbyteArray out, jbyteArray src,int x,int y,int w,int h) {
 }
