@@ -12,7 +12,7 @@ all : .i18n_timestamp libumauma.so
 	cp res/values-zh-rHK/strings.xml res/values-zh-rTW
 	touch .i18n_timestamp
 
-libumauma.so : jni/umauma.c
+libumauma.so : jni/umauma.c jni/libpng/pngusr.h jni/Android.mk
 	jni_version.sh
 	cd ${NDK_PATH};make APP=umauma
 	cp libs/armeabi/libumauma.so ./

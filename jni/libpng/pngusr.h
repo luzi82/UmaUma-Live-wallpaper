@@ -1,0 +1,15 @@
+#ifndef __PNGUSR_H__
+#define __PNGUSR_H__
+
+//#define PNG_USER_PRIVATEBUILD "Skia build; no MNG features"
+//#define PNG_USER_DLLFNAME_POSTFIX "Sk"
+#define PNG_NO_MNG_FEATURES
+#define PNG_NO_READ_GAMMA
+#define PNG_NO_WRITE_SUPPORTED
+#define PNG_NO_FLOATING_POINT_SUPPORTED
+#define PNG_NO_STDIO
+#define PNG_NO_PROGRESSIVE_READ
+//#define PNG_NO_SEQUENTIAL_READ
+#define PNG_NO_READ_sCAL
+
+#endif

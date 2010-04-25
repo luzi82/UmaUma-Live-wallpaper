@@ -21,8 +21,9 @@ libpng_SRC_FILES := \
 
 umauma_SRC_FILES := umauma.c
 
-LOCAL_LDLIBS := -lz
+LOCAL_LDLIBS := -lz -llog
 LOCAL_MODULE := umauma
 LOCAL_SRC_FILES := $(libpng_SRC_FILES) $(umauma_SRC_FILES)
+LOCAL_CFLAGS += -DPNG_USER_CONFIG
 
 include $(BUILD_SHARED_LIBRARY)
