@@ -1,6 +1,6 @@
 NDK_PATH=/home/luzi82/project/android/software/android-ndk-r3
 
-.PHONY : all
+.PHONY : all clean
 
 all : .i18n_timestamp libumauma.so
 
@@ -12,7 +12,10 @@ all : .i18n_timestamp libumauma.so
 	cp res/values-zh-rHK/strings.xml res/values-zh-rTW
 	touch .i18n_timestamp
 
-libumauma.so : jni/umauma.c jni/libpng/pngusr.h jni/Android.mk
-	jni_version.sh
+libumauma.so : jni/umauma.c jni/libpng/pngusr.h jni/Android.mk ${NDK_PATH}/apps/umauma
+	script/version_h.sh > jni/version.h
 	cd ${NDK_PATH};make APP=umauma
 	cp libs/armeabi/libumauma.so ./
+
+${NDK_PATH}/apps/umauma :
+	ln -s ${PWD}/ndkapps ${NDK_PATH}/apps/umauma
