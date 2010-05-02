@@ -54,6 +54,7 @@ void decode(png_bytep out, int outSize, png_bytep src, int srcSize,
 	static int bit_depth, color_type, interlace_type;
 	static png_uint_32 row;
 	static int number_passes, pass;
+	static int x, y;
 
 	special_read_struct special_read_ins;
 
@@ -80,12 +81,12 @@ void decode(png_bytep out, int outSize, png_bytep src, int srcSize,
 
 	LOGD("after setjmp");
 
-	special_read_ins.buf=src;
-	special_read_ins.size=srcSize;
-	special_read_ins.offset=0;
+	special_read_ins.buf = src;
+	special_read_ins.size = srcSize;
+	special_read_ins.offset = 0;
 
 	LOGD("png_set_read_fn");
-	png_set_read_fn(png_ptr, (png_voidp) (&special_read_ins), special_read);
+	png_set_read_fn(png_ptr, (png_voidp)(&special_read_ins), special_read);
 
 	LOGD("png_set_sig_bytes");
 	png_set_sig_bytes(png_ptr, 0);
@@ -99,19 +100,19 @@ void decode(png_bytep out, int outSize, png_bytep src, int srcSize,
 
 	LOGD("color_type %08x",color_type);
 
-//	png_set_tRNS_to_alpha(png_ptr);
+	//	png_set_tRNS_to_alpha(png_ptr);
 
-//	if (color_type & PNG_COLOR_MASK_COLOR)
-//	png_set_bgr(png_ptr);
+	//	if (color_type & PNG_COLOR_MASK_COLOR)
+	//	png_set_bgr(png_ptr);
 	png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER);
-	number_passes=png_set_interlace_handling(png_ptr);
+	number_passes = png_set_interlace_handling(png_ptr);
 	png_read_update_info(png_ptr, info_ptr);
 
-//	png_set_swap_alpha(png_ptr);
+	//	png_set_swap_alpha(png_ptr);
 
-//	png_read_end(png_ptr, info_ptr);
-//
-//	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	//	png_read_end(png_ptr, info_ptr);
+	//
+	//	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
 	LOGD("number_passes %d",number_passes);
 
@@ -123,75 +124,137 @@ void decode(png_bytep out, int outSize, png_bytep src, int srcSize,
 	//		}
 	//	}
 
-	int rowbytes=png_get_rowbytes(png_ptr,
-			info_ptr);
-	if(rowbytes*height!=outSize){
-		LOGD("!!! rowbytes*height!=outSize %d %d",(rowbytes*height),outSize);
+	int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+	//	png_bytep row_pointer = png_malloc(png_ptr, rowbytes);
+
+	//	png_bytep outPtr=out;
+	//	png_int_32 ww2=ww<<2;
+	//	for (row = 0; row < 480; row++) {
+	//		png_read_row(png_ptr,row_pointer,NULL);
+	//		memcpy(outPtr,row_pointer,ww2);
+	//		outPtr+=ww2;
+	//	}
+
+	//	png_bytep outPtr=out;
+	//	int* in0=(int*)row_pointer;
+	//	int* inE=in0+400;
+	//	int* in2;
+	//	int* out1=(int*)outPtr;
+	//	int* out2,*out3,*out4,*out5;
+	//	int skip=ww<<1;
+	//	int j;
+	//	//	png_int_32 hh2=hh<<2;
+	//	for (row = 0; row < 120; ++row) {
+	//		png_read_row(png_ptr,row_pointer,NULL);
+	////		in2=in0;
+	////		memcpy(outPtr,row_pointer,hh2);
+	//		out2=out1;
+	//		out3=out2+1;
+	//		out4=out2+ww;
+	//		out5=out4+1;
+	//		for(in2=in0;in2!=inE;++in2){
+	//			*out2=*in2;
+	//			*out3=*in2;
+	//			*out4=*in2;
+	//			*out5=*in2;
+	//			out2+=skip;
+	//			out3+=skip;
+	//			out4+=skip;
+	//			out5+=skip;
+	//		}
+	//		out1+=2;
+	//	}
+	//
+	//	png_free(png_ptr, row_pointer);
+
+	png_bytep row_pointer = png_malloc(png_ptr, rowbytes * height);
+	png_bytep row_pointerV[1024];
+	png_bytep p = row_pointer;
+	for (y = 0; y != height; ++y) {
+		row_pointerV[y] = p;
+		p += rowbytes;
 	}
-	png_bytep row_pointer = png_malloc(png_ptr, rowbytes);
+	png_read_image(png_ptr, row_pointerV);
 
-//	png_bytep outPtr=out;
-//	png_int_32 ww2=ww<<2;
-//	for (row = 0; row < 480; row++) {
-//		png_read_row(png_ptr,row_pointer,NULL);
-//		memcpy(outPtr,row_pointer,ww2);
-//		outPtr+=ww2;
-//	}
-
-	png_bytep outPtr=out;
-	int* in0=(int*)row_pointer;
-	int* inE=in0+hh;
-	int* in2;
-	int* out1=(int*)outPtr;
-	int* out2;
-	int j;
-	//	png_int_32 hh2=hh<<2;
-	for (row = 0; row < 480; ++row) {
-		png_read_row(png_ptr,row_pointer,NULL);
-//		in2=in0;
-//		memcpy(outPtr,row_pointer,hh2);
-		out2=out1++;
-		for(in2=in0;in2!=inE;++in2){
-			*out2=*in2;
-			out2+=ww;
+	int*in0, *in1;
+	in0 = ((int*) row_pointer) + (xx >> 1);
+	int*out0, *out1;
+	out0 = (int*) out;
+	out1 = out0 + ww;
+	const int hhh = hh >> 1;
+	int www = ww >> 1;
+	if (xx & 1) {
+		--www;
+		for (y = 0; y != hhh; ++y) {
+			in1 = in0;
+			*(out0++) = *in1;
+			*(out1++) = *in1;
+			++in1;
+			for (x = 0; x != www; ++x) {
+				*(out0++) = *in1;
+				*(out0++) = *in1;
+				*(out1++) = *in1;
+				*(out1++) = *in1;
+				++in1;
+			}
+			*(out0++) = *in1;
+			*(out1++) = *in1;
+			++in1;
+			in0 += width;
+			out0 = out1;
+			out1 += ww;
+		}
+	} else {
+		for (y = 0; y != hhh; ++y) {
+			in1 = in0;
+			for (x = 0; x != www; ++x) {
+				*(out0++) = *in1;
+				*(out0++) = *in1;
+				*(out1++) = *in1;
+				*(out1++) = *in1;
+				++in1;
+			}
+			in0 += width;
+			out0 = out1;
+			out1 += ww;
 		}
 	}
 
 	png_free(png_ptr, row_pointer);
 
-//	png_bytep outPtr=out;
-//	for (row = 0; row < height; row++) {
-////		row_pointers[row] = NULL;
-////		row_pointers[row] = png_malloc(png_ptr, rowbytes);
-//		row_pointers[row]=outPtr;
-//		outPtr+=rowbytes;
-//	}
+	//	png_bytep outPtr=out;
+	//	for (row = 0; row < height; row++) {
+	////		row_pointers[row] = NULL;
+	////		row_pointers[row] = png_malloc(png_ptr, rowbytes);
+	//		row_pointers[row]=outPtr;
+	//		outPtr+=rowbytes;
+	//	}
 
-//	png_read_image(png_ptr, row_pointers);
+	//	png_read_image(png_ptr, row_pointers);
 
-//	png_free(png_ptr, row_pointer);
-//
-//	png_read_end(png_ptr, info_ptr);
+	//	png_free(png_ptr, row_pointer);
+	//
+	//	png_read_end(png_ptr, info_ptr);
 
-//	for (row = 0; row < height; row++) {
-//		memcpy(outPtr,row_pointers[row],rowbytes);
-//		outPtr+=rowbytes;
-//		png_free(png_ptr, row_pointers[row]);
-//		row_pointers[row] = NULL;
-//	}
+	//	for (row = 0; row < height; row++) {
+	//		memcpy(outPtr,row_pointers[row],rowbytes);
+	//		outPtr+=rowbytes;
+	//		png_free(png_ptr, row_pointers[row]);
+	//		row_pointers[row] = NULL;
+	//	}
 
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
 	LOGD("decode good end");
 }
 
-void special_read(png_structp png_ptr, png_bytep data, png_size_t length)
-{
-	png_voidp special_read_ins_p0=png_get_io_ptr(png_ptr);
-	special_read_struct*special_read_ins_p=(special_read_struct*)special_read_ins_p0;
-	memcpy(data,special_read_ins_p->buf+special_read_ins_p->offset,length);
-	special_read_ins_p->offset+=length;
-	if(special_read_ins_p->offset>special_read_ins_p->size){
+void special_read(png_structp png_ptr, png_bytep data, png_size_t length) {
+	png_voidp special_read_ins_p0 = png_get_io_ptr(png_ptr);
+	special_read_struct*special_read_ins_p =
+			(special_read_struct*) special_read_ins_p0;
+	memcpy(data, special_read_ins_p->buf + special_read_ins_p->offset, length);
+	special_read_ins_p->offset += length;
+	if (special_read_ins_p->offset > special_read_ins_p->size) {
 		LOGD("!!! libumauma.so: offset>size");
 	}
 }
