@@ -29,6 +29,7 @@ public class LiveWallpaper extends WallpaperService {
 
 	@Override
 	public void onDestroy() {
+		cleanBitmap();
 		super.onDestroy();
 	}
 
@@ -40,22 +41,23 @@ public class LiveWallpaper extends WallpaperService {
 
 	// static Matrix m0 = new Matrix();
 	// static Bitmap test = null;
-	static float xOffset = 0;
-	static float yOffset = 0;
+	// static float yOffset = 0;
 
-	static final int[] FRAME = { R.raw.img00052_0, R.drawable.img00053,
-			R.drawable.img00054, R.drawable.img00055, R.drawable.img00056,
-			R.drawable.img00057, R.drawable.img00058, R.drawable.img00059,
-			R.drawable.img00060, R.drawable.img00061, R.drawable.img00062,
-			R.drawable.img00063, R.drawable.img00064, R.drawable.img00065,
-			R.drawable.img00066, R.drawable.img00067, R.drawable.img00068,
-			R.drawable.img00069, R.drawable.img00070, R.drawable.img00071,
-			R.drawable.img00072, R.drawable.img00073, R.drawable.img00074,
-			R.drawable.img00075, R.drawable.img00076, R.drawable.img00077,
-			R.drawable.img00078, R.drawable.img00079, };
-	static int FRAME_LENGTH = FRAME.length;
-	byte[][] pngBuf = new byte[FRAME_LENGTH][];
-	static int frame = 0;
+	static final int[] FRAME_P = { R.raw.img00052_p, R.raw.img00053_p,
+			R.raw.img00054_p, R.raw.img00055_p, R.raw.img00056_p,
+			R.raw.img00060_p, R.raw.img00061_p, R.raw.img00064_p,
+			R.raw.img00068_p, R.raw.img00069_p, R.raw.img00070_p,
+			R.raw.img00071_p, R.raw.img00073_p, R.raw.img00074_p, };
+	static final int[] FRAME_L = { R.raw.img00052_l, R.raw.img00053_l,
+			R.raw.img00054_l, R.raw.img00055_l, R.raw.img00056_l,
+			R.raw.img00060_l, R.raw.img00061_l, R.raw.img00064_l,
+			R.raw.img00068_l, R.raw.img00069_l, R.raw.img00070_l,
+			R.raw.img00071_l, R.raw.img00073_l, R.raw.img00074_l, };
+	static int FRAME_LENGTH = FRAME_P.length;
+
+	int WIDTH_P = 1066;
+	
+	int REFRESH_PERIOD=80;
 
 	static int oldWidth = -1;
 	static int oldHeight = -1;
@@ -94,35 +96,16 @@ public class LiveWallpaper extends WallpaperService {
 	class LiveWallpaperEngine extends Engine {
 
 		Timer timer;
-
-		// TODO should put to static in final
-		byte[] testPngBuf;
-
-		void cleanPng() {
-			synchronized (mi) {
-				testPngBuf = null;
-			}
-		}
+		byte[][] pngBuf = new byte[FRAME_LENGTH][];
+		// int frame = 0;
+		int[] activeFrame = null;
+		float xOffset = 0;
+		boolean loadDone=false;
 
 		@Override
 		public void onCreate(SurfaceHolder holder) {
 			super.onCreate(holder);
 			Log.d(LOG_TAG, "public void onCreate(SurfaceHolder holder)");
-			synchronized (mi) {
-				try {
-					AssetFileDescriptor afd = getResources().openRawResourceFd(
-							FRAME[0]);
-					testPngBuf = new byte[(int) (afd.getLength())];
-					InputStream is = afd.createInputStream();
-					int v = is.read(testPngBuf);
-					is.close();
-					Log.d(LOG_TAG, String.format("read %d=%d",
-							testPngBuf.length, v));
-				} catch (IOException e) {
-					e.printStackTrace();
-					testPngBuf = null;
-				}
-			}
 		}
 
 		@Override
@@ -148,89 +131,37 @@ public class LiveWallpaper extends WallpaperService {
 
 		}
 
-		// // 0 when on the first home screen, -0.5/-160px on the center
-		// // home screen (assume 3 screens in total).
-		// @Override
-		// public void onOffsetsChanged(float xOffset, float yOffset,
-		// float xOffsetStep, float yOffsetStep, int xPixelOffset,
-		// int yPixelOffset) {
-		// super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep,
-		// xPixelOffset, yPixelOffset);
-		// Log.d(LOG_TAG, "xOffset=" + xOffset + " yOffset=" + yOffset
-		// + "xOffseStep=" + xOffsetStep + " yOffsetStep="
-		// + yOffsetStep + "xPixelOffset=" + xPixelOffset
-		// + " yPixelOffset=" + yPixelOffset);
-		// LiveWallpaper.xOffset = xOffset;
-		// LiveWallpaper.yOffset = yOffset;
-		// // updateCanvas();
-		// }
+		// 0 when on the first home screen, -0.5/-160px on the center
+		// home screen (assume 3 screens in total).
+		@Override
+		public void onOffsetsChanged(float xOffset, float yOffset,
+				float xOffsetStep, float yOffsetStep, int xPixelOffset,
+				int yPixelOffset) {
+			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep,
+					xPixelOffset, yPixelOffset);
+			// Log.d(LOG_TAG, "xOffset=" + xOffset + " yOffset=" + yOffset
+			// + "xOffseStep=" + xOffsetStep + " yOffsetStep="
+			// + yOffsetStep + "xPixelOffset=" + xPixelOffset
+			// + " yPixelOffset=" + yPixelOffset);
+			this.xOffset = xOffset;
+			// LiveWallpaper.yOffset = yOffset;
+			// updateCanvas();
+		}
 
-		// @Override
-		// public void onSurfaceChanged(SurfaceHolder holder, int format,
-		// int width, int height) {
-		// super.onSurfaceChanged(holder, format, width, height);
-		// Log.d(LOG_TAG, "onSurfaceChanged");
-		// // updateCanvas();
-		// }
-		//
-		// @Override
-		// public void onSurfaceCreated(SurfaceHolder holder) {
-		// super.onSurfaceCreated(holder);
-		// Log.d(LOG_TAG, "onSurfaceCreated");
-		// // updateCanvas();
-		// }
-		//
-		// @Override
-		// public void onSurfaceDestroyed(SurfaceHolder holder) {
-		// super.onSurfaceDestroyed(holder);
-		// Log.d(LOG_TAG, "onSurfaceDestroyed");
-		// }
-
-		// @Override
-		// public void onTouchEvent(MotionEvent event) {
-		// super.onTouchEvent(event);
-		// // Change the wallpaper color
-		// if (event.getAction() == MotionEvent.ACTION_UP) {
-		// Log.d(LOG_TAG, "touch!");
-		// Random rand = new Random(System.currentTimeMillis());
-		// int r = rand.nextInt(256);
-		// int g = rand.nextInt(256);
-		// int b = rand.nextInt(256);
-		// updateWallpaperColor(r, g, b);
-		// }
-		// }
-
-		// private void updateWallpaperColor(int r, int g, int b) {
-		// // Get the SurfaceHolder
-		// SurfaceHolder holder = getSurfaceHolder();
-		// Canvas c = null;
-		// try {
-		// c = holder.lockCanvas();
-		// if (c != null) {
-		// c.drawRGB(r, g, b);
-		// }
-		// } finally {
-		// if (c != null)
-		// holder.unlockCanvasAndPost(c);
-		// }
-		// }
-
-		private long last = 0;
+//		private long last = 0;
 
 		private void updateCanvas() {
 			synchronized (mi) {
 				if (!isVisible())
 					return;
-				if (testPngBuf == null)
-					return;
+				int frame = (int) ((System.currentTimeMillis() / REFRESH_PERIOD)
+						% FRAME_LENGTH);
 				SurfaceHolder holder = getSurfaceHolder();
 				if (holder != null) {
 					Canvas c = null;
 					try {
 						c = holder.lockCanvas();
 						if (c != null) {
-//							 int nowWidth = 1067;
-//							 int nowHeight = 800;
 							int nowWidth = c.getWidth();
 							int nowHeight = c.getHeight();
 							int s = (nowWidth * nowHeight) << 2;
@@ -242,39 +173,50 @@ public class LiveWallpaper extends WallpaperService {
 										nowHeight, Bitmap.Config.ARGB_8888);
 								oldHeight = nowHeight;
 								oldWidth = nowWidth;
+								cleanPng();
 							}
 							if (byteAry == null || byteAry.length != s) {
 								Log.d(LOG_TAG, "new buffer");
 								byteAry = new byte[s];
 								byteBuffer = ByteBuffer.wrap(byteAry);
-								// setSize(s);
-								// size = s;
 							}
-							// c.drawColor(Color.BLACK);
-							// Bitmap
-							// bmp=BitmapFactory.decodeResource(getResources(),
-							// R.drawable.img00053,bOptions);
-							// c.drawBitmap(bmp, mi, paint);
-							// bmp.recycle();
-							// bmp=null;
-							LibUmaumaSo.decode(byteAry, testPngBuf, 0, 0,
-									nowWidth, nowHeight);
-							bitmap.copyPixelsFromBuffer(byteBuffer);
-							c.drawBitmap(bitmap, mi, paint);
-							long now = System.currentTimeMillis();
-							if (last > 0) {
-								int diff = (int) (now - last);
-								c.drawText("" + diff, 100, 75, paint);
+							if (loadDone) {
+								if (activeFrame == FRAME_L) {
+									LibUmaumaSo.decode(byteAry, pngBuf[frame],
+											0, 0, nowWidth, nowHeight);
+								} else if (activeFrame == FRAME_P) {
+									int x = (WIDTH_P - nowWidth) >> 1;
+									if (!isPreview()) {
+										x = (int) ((WIDTH_P - nowWidth) * xOffset);
+										if (x < 0)
+											x = 0;
+										if (x > WIDTH_P - nowWidth)
+											x = WIDTH_P - nowWidth;
+									}
+									LibUmaumaSo.decode(byteAry, pngBuf[frame],
+											x, 0, nowWidth, nowHeight);
+								}
+								bitmap.copyPixelsFromBuffer(byteBuffer);
+								c.drawBitmap(bitmap, mi, paint);
+
+//								long now = System.currentTimeMillis();
+//								if (last > 0) {
+//									int diff = (int) (now - last);
+//									c.drawText("" + diff, 100, 75, paint);
+//								}
+//								last = now;
 							}
-							last = now;
 						}
 					} finally {
 						if (c != null)
 							holder.unlockCanvasAndPost(c);
 					}
 				}
-				++frame;
-				frame %= FRAME_LENGTH;
+				if (!loadDone) {
+					loadPng();
+				}
+				// ++frame;
+				// frame %= FRAME_LENGTH;
 			}
 		}
 
@@ -290,11 +232,11 @@ public class LiveWallpaper extends WallpaperService {
 						@Override
 						public void run() {
 							if (System.currentTimeMillis()
-									- scheduledExecutionTime() > 5)
+									- scheduledExecutionTime() > 10)
 								return;
 							updateCanvas();
 						}
-					}, 1, 1);
+					}, REFRESH_PERIOD, REFRESH_PERIOD);
 				}
 			}
 			// Log
@@ -311,6 +253,43 @@ public class LiveWallpaper extends WallpaperService {
 			}
 		}
 
+		void cleanPng() {
+			synchronized (mi) {
+				loadDone=false;
+				for (int i = 0; i < FRAME_LENGTH; ++i) {
+					pngBuf[i] = null;
+				}
+			}
+		}
+
+		void loadPng() {
+			synchronized (mi) {
+				try {
+					activeFrame = null;
+					if (oldWidth == 480 && oldHeight == 800) {
+						activeFrame = FRAME_P;
+					}
+					if (oldWidth == 800 && oldHeight == 480) {
+						activeFrame = FRAME_L;
+					}
+					if (activeFrame != null) {
+						for (int i = 0; i < FRAME_LENGTH; ++i) {
+							AssetFileDescriptor afd = getResources()
+									.openRawResourceFd(activeFrame[i]);
+							pngBuf[i] = new byte[(int) (afd.getLength())];
+							InputStream is = afd.createInputStream();
+							is.read(pngBuf[i]);
+							is.close();
+						}
+					}
+					loadDone=true;
+				} catch (IOException e) {
+					e.printStackTrace();
+					// testPngBuf = null;
+				}
+			}
+		}
+
 		public void startEngine() {
 			createTimer();
 		}
@@ -318,8 +297,7 @@ public class LiveWallpaper extends WallpaperService {
 		public void cleanEngine() {
 			clearTimer();
 			cleanBitmap();
-			// TODO should run in final
-			// cleanPng();
+			cleanPng();
 		}
 
 	}
